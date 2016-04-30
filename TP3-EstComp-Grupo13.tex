@@ -1,0 +1,45 @@
+\documentclass[a4paper,12pt,english,brazil]{article}
+\usepackage[round,authoryear]{natbib}
+\usepackage[brazilian]{babel}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{url}
+
+\begin{document}
+\bibliographystyle{plainnat}
+
+
+\title{Trabalho Prático 3 \\ Simulação de Sistema M$/$M$/$1}
+\author{Grupo 13 \\ Alisson Moreira Ferreira - 11/0106946 \\ Augusto Cesar Ribeiro Nunes - 13/0103004}
+\maketitle
+\begin{abstract}
+Este Trabalho Prático implementa e simula um Sistema M$/$M$/$1 na linguagem R. Utilizou-se $\lambda = 1000$ como o parâmetro da Distribuição Poisson do número de clientes que entram no sistema a cada unidade de tempo, e $\mu = 1050$ como parâmetro para Distribuição Poisson do número de atendimentos a cada unidade de tempo. A Disciplina de Atendimento utilizada foi a FIFO...
+\end{abstract}
+
+\section{Introdução}
+A Teoria de Filas tem sua origem nos trabalhos do dinamarquês Agnes Krarup Erlang (\cite{wiki:001}) que entre 1917-20, enquanto trabalhava para a empresa de telefonia estatal da Dinamarca, foi incumbido da tarefa de otimizar a alocação de circuitos para que o serviço tivesse uma boa relação entre eficiência e custo de operação.
+
+Este já era um problema conhecido: no final do século 19 e início do século 20 as redes de telefone, cujos circuitos eram manuseados por operadores, sofriam com problemas de dimensionamento causados pela súbita expansão no sistema. Esta expansão teve como causa fundamental o cancelamento judicial das patentes da AT\&T e Bell Company nos EUA: o país que até então tinha um monopólio do serviço se viu inundado por dezenas de novos provedores de serviço (\cite{northrup2011american}, \textit{Essay} "Communications"). 
+
+Mas o problema que até então era tratado de maneira \textit{ad hoc}, foi sistematizado por Erlang em \textit{Telefon-Ventetider. Et Stykke Sandsynlighedsregning} - "Filas de Telefonia: Um pouco de Probabilidade" - o dinamarquês ilustrou a utilização de conceitos modernos de probabilidade na análise do problema em questão. O estudo de Erlang daria fruição ao ramo da Pesquisa Operacional que seria posteriormente conhecido como Engenharia de Teletráfico e à Teoria de Filas em Probabilidade e Estatística. 
+
+Matematicamente, uma fila descreve a maneira como \textit{clientes} - quem ou o quê demanda um \textit{serviço} - são atendidos por \textit{servidores} - quem provê o \textit{serviço} em questão. O Modelo de Filas adotado aqui utiliza a Notação de Kendall (ver \citet{bose2013introduction}), que, com cinco parâmetros descreve a natureza do processo de chegada à fila, a natureza do processo de serviço (em termos de tempo de serviço), o número de \textit{servidores}, o número máximo de clientes no sistema e a disciplina de serviço básica. O Modelo M$/$M$/$1 implementado e simulado aqui utiliza os seguintes parâmetros:
+
+\begin{itemize}
+\item O processo de chegada dos clientes é o que se chama \textbf{Processo de Poisson}, ou seja,\textbf{ o número de clientes} que chegam ao sistema, a cada intervalo de tempo, \textbf{segue uma distribuição de Poisson} com taxa $\lambda = 1000$. Equivalentemente, podemos afirmar que \textbf{o tempo entre chegadas consecutivas de clientes} segue uma \textbf{Distribuição Exponencial} com média $1/\lambda$;
+\item O \textbf{tempo de duração de cada atendimento} segue distribuição \textbf{Exponencial} com parâmetro $\mu = 1050$;
+\item O \textbf{número de servidores} disponíveis é igual a 1;
+\item O \textbf{número de filas} também é igual a 1;
+\item O \textbf{número máximo de clientes} é $\infty$;
+\item A \textbf{Disciplina de Serviço} é \textit{First In, First Out}, ou seja, os primeiros clientes a chegarem são os primeiros a serem atendidos.
+\end{itemize}
+
+Ou seja, simulou-se uma fila onde o número de clientes que chegam a cada intervalo de tempo é, em média, igual a 1000, e o tempo de duração de cada atendimento é, em média, igual 1050
+
+\bibliography{TP3-EstComp-Grupo13}
+
+\end{document}

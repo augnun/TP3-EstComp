@@ -1,8 +1,8 @@
 # Simulação de fila M/M/1
 lambda <- 20 #taxa de chegada
-mu <- 50 #taxa de atendimento
+mu <- 5000 #taxa de atendimento
 tempo <- 1000 # tempo de simulação
-t_0 <- 0 # instante inicial da simulação
+t <- 0 # instante atual da simulação
 fila <- 0 # fila inicialmente com tamanho zero
 s <- 0 # soma acumulada para calcular o tamanho médio da fila
 i <- 1
@@ -10,33 +10,33 @@ i <- 1
 #Primeira chegada
 t1 <- rexp(1, rate = lambda)
 fila_atual <- 1
-t_eventos <- t1
-t_0 <- t1
-n_eventos <- 1 #Número total de eventos ocorridos
+t_evento <- t1 #"tempo" do evento inicial
+t <- t1
+n_evento <- 1 #Número do evento inicial
 
-while(t_0 < tempo){
-  n_eventos <- n_eventos + 1
+while(t < tempo){
+  n_evento <- n_evento + 1
   if(fila_atual > 0){ # A fila não está vazia
     t1 <- rexp(1, rate = lambda + mu) # Tempo até o próximo evento
     #o evento é chegada ou atendimento?
     p <- runif(1)
-    fila[n_eventos] <- fila_atual #quantos estavam na fila?
+    fila[n_evento] <- fila_atual #Atualiza a fila pro n-esimo evento/indice
     fila_atual <- ifelse(p<lambda/(lambda + mu),
                          fila_atual+1, # chegada
                          fila_atual-1) # partida
   }
   else{ # a fila esta vazia
     t1 <- rexp(1, rate = lambda)
-    fila[n_eventos] <- fila_atual
+    fila[n_evento] <- fila_atual
     fila_atual <- 1
   }
-  t_0 <- t_0 + t1
-  t_eventos[n_eventos] <- t1
-  s <- s+t1*fila[n_eventos]
+  t <- t + t1
+  t_evento[n_evento] <- t1
+  s <- s+t1*fila[n_evento]
 }
 
-plot(cumsum(t_eventos),fila,type="s", xlab="Tempo",ylab="Tamanho da fila",
-     main=paste("Simulação de fila M/M/1\nTamanho Médio da Fila ",s/t_0))
+plot(cumsum(t_evento),fila,type="s", xlab="Tempo",ylab="Tamanho da fila",
+     main=paste("Simulação de fila M/M/1\nTamanho Médio da Fila ",s/t))
 
 # lambda = 50
 # mu = 150

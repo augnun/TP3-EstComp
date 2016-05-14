@@ -1,5 +1,5 @@
-mm1.tme <- function(n = 1000,
-                    lambda = 20,
+mm1.tme <- function(lambda = 20,
+                    mu = 50,
                     tempo = 1000) {
   tme <- vector(length = n)
   a <- 1
@@ -20,7 +20,7 @@ mm1.tme <- function(n = 1000,
     j <- 1
     t <- tc[1]
     while (j <= length(tc) - 1) {
-      ta[j] <- rexp(1, rate = lambda)
+      ta[j] <- rexp(1, rate = lambda) #tempo de atendimento exp com taxa mu
       if (t + ta[j] < tc[j + 1]) {
         to <- to + tc[j + 1] - (t + ta[j])
         t <- tc[j + 1]
@@ -37,8 +37,8 @@ mm1.tme <- function(n = 1000,
   return(tme)
 }
 
-mm1.ppo <- function(n = 1000,
-                    lambda = 20,
+mm1.ppo <- function(lambda = 20,
+                    mu = 50,
                     tempo = 1000) {
   ppo <- vector(length = n)
   a <- 1
@@ -59,7 +59,7 @@ mm1.ppo <- function(n = 1000,
     j <- 1
     t <- tc[1]
     while (j <= length(tc) - 1) {
-      ta[j] <- rexp(1, rate = lambda)
+      ta[j] <- rexp(1, rate = mu) #tempo de atendimento exp com taxa mu
       if (t + ta[j] < tc[j + 1]) {
         to <- to + tc[j + 1] - (t + ta[j])
         t <- tc[j + 1]
@@ -76,17 +76,18 @@ mm1.ppo <- function(n = 1000,
   return(ppo)
 }
 
-mm1.tmf <- function(n = 1000,
-                    lambda = 20,
+mm1.tmf <- function(lambda = 20,
+                    mu = 50,
                     tempo = 1000) {
   tmf <- vector(length = n)
   a <- 1
-  while (a < n)
+  while (a <= n)
   {
     t <- 0
     i <- 1
     tc <- vector()
     ta <- vector()
+    
     s <- 0
     while (t < tempo) {
       tec <- rexp(1, rate = lambda)
@@ -94,12 +95,13 @@ mm1.tmf <- function(n = 1000,
       t <- tc[i]
       i <- i + 1
     }
+    fila <- vector(length=length(tc))
     to <- tc[1]
     te <- 0
     j <- 1
     t <- tc[1]
     while (j <= length(tc) - 1) {
-      ta[j] <- rexp(1, rate = lambda)
+      ta[j] <- rexp(1, rate = mu) #tempo de atendimento exp com taxa mu
       if (t + ta[j] < tc[j + 1]) {
         to <- to + tc[j + 1] - (t + ta[j])
         t <- tc[j + 1]
@@ -107,13 +109,15 @@ mm1.tmf <- function(n = 1000,
       else{
         te <- te + (t + ta[j]) - tc[j + 1]
         t <- t + ta[j]
-        s <- s + te
+        fila[j] <- fila[j] + 1
+        s <- s + fila[j]*(tc[j+1]-tc[j])
+        
       }
 
       j <- j + 1
 
     }
-    tmf[a] <- te / length(tc)
+    tmf[a] <- s / length(tc)
     a <- a + 1
   }
   return(tmf)

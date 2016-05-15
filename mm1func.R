@@ -1,7 +1,8 @@
 mm1.tme <- function(lambda = 20,
                     mu = 50,
-                    tempo = 1000) {
-  tme <- vector(length = n)
+                    tempo = 1000,
+                    n=100) {
+  tme <- vector()
   a <- 1
   while (a < n)
   {
@@ -39,7 +40,8 @@ mm1.tme <- function(lambda = 20,
 
 mm1.ppo <- function(lambda = 20,
                     mu = 50,
-                    tempo = 1000) {
+                    tempo = 1000,
+                    n=100) {
   ppo <- vector(length = n)
   a <- 1
   while (a < n)
@@ -78,7 +80,8 @@ mm1.ppo <- function(lambda = 20,
 
 mm1.tmf <- function(lambda = 20,
                     mu = 50,
-                    tempo = 1000) {
+                    tempo = 1000,
+                    n=100) {
   tmf <- vector(length = n)
   a <- 1
   while (a <= n)

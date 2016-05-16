@@ -8,6 +8,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{url}
+\usepackage{listings}
+\lstset{
+    language=R,
+    basicstyle=\ttfamily
+}
 
 \begin{document}
 \bibliographystyle{plainnat}
@@ -17,7 +22,7 @@
 \author{Grupo 13 \\ Alisson Moreira Ferreira - 11/0106946 \\ Augusto Cesar Ribeiro Nunes - 13/0103004}
 \maketitle
 \begin{abstract}
-Este Trabalho Prático implementa e simula um Sistema M$/$M$/$1 na linguagem R. Utilizou-se $\lambda = 1000$ como o parâmetro da Distribuição Poisson do número de clientes que entram no sistema a cada unidade de tempo, e $\mu = 1050$ como parâmetro para Distribuição Poisson do número de atendimentos a cada unidade de tempo. A Disciplina de Atendimento utilizada foi a FIFO...
+Este Trabalho Prático implementa e simula um Sistema M$/$M$/$1 na linguagem R. Utilizou-se $\lambda = 20$ como o parâmetro da Distribuição Poisson do número de clientes que entram no sistema a cada unidade de tempo, e $\mu = 50$ como parâmetro para Distribuição Poisson do número de atendimentos a cada unidade de tempo e disciplina de atendimento \textit{First In, First Out}. Foram obtidas estimativas médias e os Intervalos de Confiança para o Tempo Médio de Espera na fila (por cliente), para o Tamanho Médio da Fila e para a Taxa de Ocupação.
 \end{abstract}
 
 \section{Introdução}
@@ -30,15 +35,252 @@ Mas o problema que até então era tratado de maneira \textit{ad hoc}, foi siste
 Matematicamente, uma fila descreve a maneira como \textit{clientes} - quem ou o quê demanda um \textit{serviço} - são atendidos por \textit{servidores} - quem provê o \textit{serviço} em questão. O Modelo de Filas adotado aqui utiliza a Notação de Kendall (ver \citet{bose2013introduction}), que, com cinco parâmetros descreve a natureza do processo de chegada à fila, a natureza do processo de serviço (em termos de tempo de serviço), o número de \textit{servidores}, o número máximo de clientes no sistema e a disciplina de serviço básica. O Modelo M$/$M$/$1 implementado e simulado aqui utiliza os seguintes parâmetros:
 
 \begin{itemize}
-\item O processo de chegada dos clientes é o que se chama \textbf{Processo de Poisson}, ou seja,\textbf{ o número de clientes} que chegam ao sistema, a cada intervalo de tempo, \textbf{segue uma distribuição de Poisson} com taxa $\lambda = 1000$. Equivalentemente, podemos afirmar que \textbf{o tempo entre chegadas consecutivas de clientes} segue uma \textbf{Distribuição Exponencial} com média $1/\lambda$;
-\item O \textbf{tempo de duração de cada atendimento} segue distribuição \textbf{Exponencial} com parâmetro $\mu = 1050$;
+\item O processo de chegada dos clientes é o que se chama \textbf{Processo de Poisson}, ou seja,\textbf{ o número de clientes} que chegam ao sistema, a cada intervalo de tempo, \textbf{segue uma distribuição de Poisson} com taxa $\lambda = 20$. Equivalentemente, podemos afirmar que \textbf{o tempo entre chegadas consecutivas de clientes} segue uma \textbf{Distribuição Exponencial} com média $1/\lambda$\footnote{Daí a utilização de "M" na notação: diferentes bibliografias utilizam como indicação de que a distribuição é\textit{Markoviana} ou \textit{Memoryless}};
+\item O \textbf{tempo de duração de cada atendimento} segue distribuição \textbf{Exponencial} com parâmetro $\mu = 50$;
 \item O \textbf{número de servidores} disponíveis é igual a 1;
 \item O \textbf{número de filas} também é igual a 1;
 \item O \textbf{número máximo de clientes} é $\infty$;
 \item A \textbf{Disciplina de Serviço} é \textit{First In, First Out}, ou seja, os primeiros clientes a chegarem são os primeiros a serem atendidos.
 \end{itemize}
 
-Ou seja, simulou-se uma fila onde o número de clientes que chegam a cada intervalo de tempo é, em média, igual a 1000, e o tempo de duração de cada atendimento é, em média, igual 1050
+Ou seja, simulou-se uma fila onde o número de clientes que chegam a cada intervalo de tempo é, em média, igual a 20, e o tempo de duração de cada atendimento é, em média, igual a 50. Portanto, a \textbf{Taxa de Ocupação} do servidor é $\rho = \frac{\lambda}{\mu} = 2/5$, ou seja, o servidor fica ocupado, em média, 40\% do tempo de simulação. Equivalentemente, o servidor fica ocioso 60\% do tempo.
+
+O Tempo Médio de Espera (por cliente) 
+
+Um dos estágios essenciais para executar uma simulação é estipular o número de simulações que devem ser executadas. A técnica aqui utilizada (ver \cite{ross2013simulation}) para obter as estimativas médias do Tempo Médio de Espera \textbf{TME} na fila (por cliente), para o Tamanho Médio da Fila \textbf{TMF} e para a Taxa de Ocupação \textbf{TO}, resulta diretamente do Teorema do Limite Central: temos uma distribuição que atende às condições de regularidade exigidas, bem como média e variância finitas, as filas foram simuladas n vezes, admitindo um desvio padrão de $10^{-1}$ em todos os casos. Ou seja,
+
+\begin{enumerate}
+\item Foi escolhido $d = 10^{-1}$ como valor aceitável para o desvio-padrão da estimativa;
+\item Foram simuladas inicialmente 100 filas;
+\item Novas simulações foram obtidas\footnote{Notando que há um claro problema sob o ponto de vista teórico quando afirmamos algo do tipo, já que o tamanho da amostra passa a ser também aleatório}, até que obteve-se uma quantidade $k$ de simulações tais que $S/\sqrt{k} < d = 10^{-1}$
+\item A estimativa para o parâmetro em questão foi então dada pela média das estimativas obtidas nas k simulações de forma a atender à tolerância estipulada.
+\end{enumerate}
+Então, estamos certos de que os valores simulados diferem dos valores "reais" em no máximo $1.96x10^{-1}$. Note que a escolha do desvio padrão aqui foi arbitrária, e em grande parte deveu-se a uma facilitação da obtenção das simulações com o parco poder computacional utilizado na confecção desse trabalho. Uma escolha mais criteriosa seria essencial em um contexto mais pragmático: as necessidades para a fila de um servidor \textit{web} ou para a fila de um caixa de lanchonete são grosseiramente diferentes, por exemplo, e além do fato de que a fila M$/$M$/$1 pode não ser a mais adequada, um desvio padrão de $10^{-1}$ tem implicações práticas extremamente dissonantes de acordo com o contexto. Portanto, como "prova de conceito", o valor escolhido \textit{funciona}, na "vida real", nem tanto.
+
+Similarmente, para os Intervalos de Confiança de 95\% dos parâmetros citados acima, foram obtidos intervalos de confiança de amplitude L de no máximo $1$. Aqui vale um retorno sobre a observação feita para o desvio padrão das estimativas pontuais encontradas: novamente é um valor totalmente arbitrário e escolhido de certa forma a possibilitar a feitura deste relatório em tempo hábil, e em se tratando de problemas mais contextualizados dificilmente esta seria a escolha. Logo, podemos resumir nosso processo da seguinte forma:
+
+\begin{enumerate}
+\item Foram simuladas inicialmente 100 filas;
+\item Novas simulações foram obtidas\footnote{Ver nota acima}, até que obteve-se uma quantidade $k$ de simulações tais que $2z_{\alpha/2}S/\sqrt{k} < L$. Os valores de S devem ser atualizados a cada nova simulação;
+\item Se $\bar{x}$ e s são valores observados de $\bar{X}$ e S, então o Intervalo de Confiança de 95\% para o parâmetro em questão será dado por $\bar{x} \pm 1.96s/\sqrt{k}$
+\end{enumerate}
+
+    As implementações encontram-se no Anexo A. Foi disponibilizado um repositório no site github.com: \url{http://github.com/august-o/TP3-EstComp}. Lá encontram-se todos os arquivos-fonte utilizados neste Trabalho Prático. O computador utilizado foi um Macbook Pro, Sistema Operacional OS X El Capitan (10.11.3), com processador Intel Core i5 de 2.4 GHz e 16 GB de memória RAM 1333 MHz DDR3. A versão do R utilizada foi a 3.3.0, com a IDE RStudio em sua versão 0.99.1130. Como tentativa de mitigar a \textit{lentidão} do R que foi observada nos dois primeiros Trabalhos Práticos, optou-se por utilizar uma biblioteca de Álgebra Linear Básica (\textit{Basic Linear Algebra Subprograms} - \textbf{BLAS} em inglês) diferente da que vem como padrão no R: a vecLib\footnote{https://developer.apple.com/library/mac/documentation/Performance/Conceptual/vecLib/}.   
+
+\section{Resultados}
+
+As estimativas médias para os parâmetros e seus Intervalos de Confiança de 95\%, bem como o número de simulações necessárias para cada estimação, constam na Tabela \ref{tab:ests} a seguir:
+
+
+\begin{table}[!htb]\centering
+\begin{tabular}{ c |c| c}
+Parâmetro & Estimativa & IC 95\% de confiança  \\ \hline
+ TME & 5.087305 &  $5.087305 \pm 0.2256188$  \\  
+ TMF & 0.007997178 & $0.007997178 \pm 0.00502039$ \\
+ TO & 0.5940587 &  $0.5940587 \pm 1.197571e-05$\\
+
+\end{tabular}
+\caption{Estimativas pontuais e intervalares para os parâmetros considerando as tolerâncias discutidas}\label{tab:ests}
+\end{table}
+
+É importante retornar aqui à discussão tratada na introdução, quando foi explicada a metodologia de simulação. Todas as estimativas pontuais e intervalares acima acabaram atendendo aos critérios de parada já nas primeiras 100 simulações, então omitimos os números de simulações. A Tabela \ref{tab:aval} a seguir avalia como as estimativas pontuais da simulação aproximam os parâmetros:
+\begin{table}[!htb]\centering
+\begin{tabular}{ c |c| c|c|c}
+Parâmetro & Estimativa & Parâmetro & Diferença ($\hat{\theta} - \theta)$ & Diferença Percentual \\ \hline
+ TME & 5.087305 &  5.187 & -0.099695 & 1.9\% \\  
+ TMF & 0.254673 & 0.2666667& -0.01199367& 4.5\% \\
+ TO & 0.5940587 &  0.6 & -0.0059413 & 0.9\%\\
+
+\end{tabular}
+\caption{Avaliação das estimativas pontuais simuladas em relação aos parâmetros}\label{tab:aval}
+\end{table}
+
+\section{Conclusão}
+Este Trabalho Prático teve algumas dificuldades de confecção: o código não foi devidamente otimizado e entendemos que um tempo de simulação maior (ou uma maior capacidade computacional) diminuiria as diferenças ilustradas na Tabela \ref{tab:aval}. No entanto, como passo inicial na simulação de um processo estocástico a tempo discreto o Trabalho Prático encontrou seu propósito, já que ilustrou importantes técnicas de simulação.
+\newpage
+
+\section*{Anexo A}
+A seguir, os códigos e implementações utilizados no trabalho. Lembrando que os mesmos encontram-se em repositório no github: \url{https://github.com/august-o/TP3-EstComp}
+\begin{lstlisting}
+mm1.tme <- function(lambda = 20,
+                    mu = 50,
+                    tempo = 1000,
+                    n=100) {
+  tme <- vector()
+  a <- 1
+  while (a < n)
+  {
+    t <- 0
+    i <- 1
+    tc <- vector()
+    ta <- vector()
+    while (t < tempo) {
+      tec <- rexp(1, rate = lambda)
+      tc[i] <- t + tec
+      t <- tc[i]
+      i <- i + 1
+    }
+    to <- tc[1]
+    te <- 0
+    j <- 1
+    t <- tc[1]
+    while (j <= length(tc) - 1) {
+      ta[j] <- rexp(1, rate = lambda) 
+      if (t + ta[j] < tc[j + 1]) {
+        to <- to + tc[j + 1] - (t + ta[j])
+        t <- tc[j + 1]
+      }
+      else{
+        te <- te + (t + ta[j]) - tc[j + 1]
+        t <- t + ta[j]
+      }
+      j <- j + 1
+    }
+    tme[a] <- (te*length(tc))/ tempo
+    a <- a + 1
+  }
+  return(tme)
+}
+
+mm1.ppo <- function(lambda = 20,
+                    mu = 50,
+                    tempo = 1000,
+                    n=100) {
+  ppo <- vector(length = n)
+  a <- 1
+  while (a < n)
+  {
+    t <- 0
+    i <- 1
+    tc <- vector()
+    ta <- vector()
+    while (t < tempo) {
+      tec <- rexp(1, rate = lambda)
+      tc[i] <- t + tec
+      t <- tc[i]
+      i <- i + 1
+    }
+    to <- tc[1]
+    te <- 0
+    j <- 1
+    t <- tc[1]
+    while (j <= length(tc) - 1) {
+      ta[j] <- rexp(1, rate = mu) 
+      if (t + ta[j] < tc[j + 1]) {
+        to <- to + tc[j + 1] - (t + ta[j])
+        t <- tc[j + 1]
+      }
+      else{
+        te <- te + (t + ta[j]) - tc[j + 1]
+        t <- t + ta[j]
+      }
+      j <- j + 1
+    }
+    ppo[a] <- to / tempo
+    a <- a + 1
+  }
+  return(ppo)
+}
+
+mm1.tmf <- function(lambda = 20,
+                    mu = 50,
+                    tempo = 1000,
+                    n=100) {
+  tmf <- vector(length = n)
+  a <- 1
+  while (a <= n)
+  {
+    t <- 0
+    i <- 1
+    tc <- vector()
+    ta <- vector()
+    
+    s <- 0
+    while (t < tempo) {
+      tec <- rexp(1, rate = lambda)
+      tc[i] <- t + tec
+      t <- tc[i]
+      i <- i + 1
+    }
+    fila <- vector(length=length(tc))
+    to <- tc[1]
+    te <- 0
+    j <- 1
+    t <- tc[1]
+    while (j <= length(tc) - 1) {
+      ta[j] <- rexp(1, rate = mu) 
+      if (t + ta[j] < tc[j + 1]) {
+        to <- to + tc[j + 1] - (t + ta[j])
+        t <- tc[j + 1]
+      }
+      else{
+        te <- te + (t + ta[j]) - tc[j + 1]
+        t <- t + ta[j]
+        fila[j] <- fila[j] + 1
+        s <- s + fila[j]*(tc[j+1]-tc[j])
+        
+      }
+
+      j <- j + 1
+
+    }
+    tmf[a] <- s / length(tc)
+    a <- a + 1
+  }
+  return(tmf)
+}
+
+set.seed(12345)
+tme.vetor <- mm1.tme()
+k <- 100
+while(sd(tme.vetor)/k > 10^(-1)){
+  append(tme.vetor, mm1.tme())
+  k <- length(tme.vetor)
+}
+tme <- mean(tme.vetor)
+
+while(2*pnorm(0.975)*sd(tme.vetor)/sqrt(k) > 1){
+  append(tme.vetor, mm1.tme())
+  k <- length(tme.vetor)
+}
+pnorm(0.975)*sd(tme.vetor)/sqrt(k)
+
+set.seed(12345)
+to.vetor <- mm1.ppo()
+k <- 100
+while(sd(to.vetor)/k > 10^(-1)){
+  append(to.vetor, mm1.ppo())
+  k <- length(to.vetor)
+}
+to <- mean(to.vetor)
+to
+
+while(2*pnorm(0.975)*sd(to.vetor)/sqrt(k) > 10^(-1)){
+  append(to.vetor, mm1.ppo())
+  k <- length(to.vetor)
+}
+pnorm(0.975)*sd(to.vetor)/sqrt(k)
+
+set.seed(12345)
+tmf.vetor <- mm1.tmf()
+k <- 100
+while(sd(tmf.vetor)/k > 10(-1)){
+  append(tmf.vetor,mm1.tmf())
+  k<-length(tmf.vetor)
+}
+tmf <- mean(tmf.vetor)
+tmf
+
+while(2*pnorm(0.975)*sd(tmf.vetor)/sqrt(k) > 10^(-1)){
+  append(tmf.vetor, mm1.tmf())
+  k <- length(tmf.vetor)
+}
+pnorm(0.975)*sd(tmf.vetor)/sqrt(k)
+
+
+\end{lstlisting}
+
+
 
 \bibliography{TP3-EstComp-Grupo13}
 

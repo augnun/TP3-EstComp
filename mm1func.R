@@ -32,7 +32,7 @@ mm1.tme <- function(lambda = 20,
       }
       j <- j + 1
     }
-    tme[a] <- te / (length(tc) - 1)
+    tme[a] <- (te*length(tc))/ tempo
     a <- a + 1
   }
   return(tme)
@@ -72,7 +72,7 @@ mm1.ppo <- function(lambda = 20,
       }
       j <- j + 1
     }
-    ppo[a] <- to / tail(te,1)
+    ppo[a] <- to / tempo
     a <- a + 1
   }
   return(ppo)
